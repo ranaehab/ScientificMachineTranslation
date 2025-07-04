@@ -43,7 +43,7 @@ tokenizer_ar.fit_on_texts(arabic_sentences_train)
 train_data_ar = tokenizer_ar.texts_to_sequences(arabic_sentences_train)
 train_data_ar = pad_sequences(train_data_ar, maxlen=max_sequence_length, padding='post', truncating='post')
 
-# Define encoder inputs and BiLSTM layer
+# Define encoder inputs and BiGRU layer
 encoder_inputs = Input(shape=(max_sequence_length,))
 encoder_embedding = Embedding(len(tokenizer_ar.word_index) + 1, embedding_dim)(encoder_inputs)
 
@@ -53,7 +53,7 @@ maxpooling_layer = MaxPooling1D(pool_size=2)(conv1d_layer)
 encoder_bilstm = Bidirectional(GRU(latent_dim, return_sequences=True))(maxpooling_layer)
 encoder_lstm = Dense(latent_dim)(encoder_bilstm)
 
-# Define decoder inputs and BiGRU layer
+# Define decoder inputs and GRU layer
 decoder_inputs = Input(shape=(max_sequence_length,))
 decoder_embedding = Embedding(len(tokenizer_en.word_index) + 1, embedding_dim)(decoder_inputs)
 decoder_lstm = GRU(latent_dim, return_sequences=True)(decoder_embedding)
