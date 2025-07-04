@@ -53,7 +53,7 @@ maxpooling_layer = MaxPooling1D(pool_size=2)(conv1d_layer)
 encoder_bilstm = Bidirectional(LSTM(latent_dim, return_sequences=True))(maxpooling_layer)
 encoder_lstm = Dense(latent_dim)(encoder_bilstm)
 
-# Define decoder inputs and BiGRU layer
+# Define decoder inputs and LSTM layer
 decoder_inputs = Input(shape=(max_sequence_length,))
 decoder_embedding = Embedding(len(tokenizer_ar.word_index) + 1, embedding_dim)(decoder_inputs)
 decoder_lstm = LSTM(latent_dim, return_sequences=True)(decoder_embedding)
