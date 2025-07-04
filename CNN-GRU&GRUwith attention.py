@@ -12,9 +12,9 @@ latent_dim = 256
 
 
 # Load train, validate, and test data from text files
-with open('D:/PHD Papers/scientific translation/GPT/BiLSTM witth Attention/LastDEASTExp/DEASTTrain.txt', 'r', encoding='utf-8') as f:
+with open('Train.txt', 'r', encoding='utf-8') as f:
     train_data = f.readlines()
-with open('D:/PHD Papers/scientific translation/GPT/BiLSTM witth Attention/LastDEASTExp/DEASTTest.txt', 'r', encoding='utf-8') as f:
+with open('Test.txt', 'r', encoding='utf-8') as f:
     test_data = f.readlines()
     
 # Extract English and Arabic sentences from data
@@ -43,7 +43,7 @@ tokenizer_ar.fit_on_texts(arabic_sentences_train)
 train_data_ar = tokenizer_ar.texts_to_sequences(arabic_sentences_train)
 train_data_ar = pad_sequences(train_data_ar, maxlen=max_sequence_length, padding='post', truncating='post')
 
-# Define encoder inputs and BiLSTM layer
+# Define encoder inputs and GRU layer
 encoder_inputs = Input(shape=(max_sequence_length,))
 encoder_embedding = Embedding(len(tokenizer_ar.word_index) + 1, embedding_dim)(encoder_inputs)
 #CNN Layer
@@ -53,14 +53,14 @@ maxpooling_layer = MaxPooling1D(pool_size=2)(conv1d_layer)
 encoder_lstm = GRU(latent_dim, return_sequences=True)(maxpooling_layer)
 encoder_lstm = Dense(latent_dim)(encoder_lstm)
 
-# Define decoder inputs and BiGRU layer
+# Define decoder inputs and GRU layer
 decoder_inputs = Input(shape=(max_sequence_length,))
 decoder_embedding = Embedding(len(tokenizer_en.word_index) + 1, embedding_dim)(decoder_inputs)
 decoder_lstm = GRU(latent_dim, return_sequences=True)(decoder_embedding)
 
 # Apply Attention mechanism
 attention = Dot(axes=[2, 2])([decoder_lstm, encoder_lstm])
-attention = Activation('sigmoid')(attention)
+attention = Activation('softmax')(attention)
 context = Dot(axes=[2, 1])([attention, encoder_lstm])
 decoder_combined_context = Concatenate(axis=-1)([context, decoder_lstm])
 
