@@ -51,7 +51,7 @@ conv1d_layer = Conv1D(filters=64, kernel_size=3, activation='relu')(encoder_embe
 maxpooling_layer = MaxPooling1D(pool_size=2)(conv1d_layer)
 
 encoder_bilstm = Bidirectional(LSTM(latent_dim, return_sequences=True))(maxpooling_layer)
-encoder_lstm = Dense(latent_dim)(encoder_bilstm)
+encoder_bilstm = Dense(latent_dim)(encoder_bilstm)
 
 # Define decoder inputs and LSTM layer
 decoder_inputs = Input(shape=(max_sequence_length,))
@@ -59,9 +59,9 @@ decoder_embedding = Embedding(len(tokenizer_ar.word_index) + 1, embedding_dim)(d
 decoder_lstm = LSTM(latent_dim, return_sequences=True)(decoder_embedding)
 
 # Apply Attention mechanism
-attention = Dot(axes=[2, 2])([decoder_lstm, encoder_lstm])
+attention = Dot(axes=[2, 2])([decoder_lstm, encoder_bilstm])
 attention = Activation('softmax')(attention)
-context = Dot(axes=[2, 1])([attention, encoder_lstm])
+context = Dot(axes=[2, 1])([attention, encoder_bilstm])
 decoder_combined_context = Concatenate(axis=-1)([context, decoder_lstm])
 
 # Define decoder output layer
