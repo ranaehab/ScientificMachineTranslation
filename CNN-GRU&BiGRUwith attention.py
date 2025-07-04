@@ -6,15 +6,15 @@ from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 
 # Define hyperparameters
-max_sequence_length = 50
-embedding_dim = 50
-latent_dim = 128
+max_sequence_length = 100
+embedding_dim = 100
+latent_dim = 256
 
 
 # Load train, validate, and test data from text files
-with open('D:/PHD Papers/scientific translation/GPT/BiLSTM witth Attention/LastDEASTExp/DEASTTrain.txt', 'r', encoding='utf-8') as f:
+with open('Tain.txt', 'r', encoding='utf-8') as f:
     train_data = f.readlines()
-with open('D:/PHD Papers/scientific translation/GPT/BiLSTM witth Attention/LastDEASTExp/DEASTTest2.txt', 'r', encoding='utf-8') as f:
+with open('Test.txt', 'r', encoding='utf-8') as f:
     test_data = f.readlines()
 
 # Extract English and Arabic sentences from data
@@ -43,7 +43,7 @@ tokenizer_ar.fit_on_texts(arabic_sentences_train)
 train_data_ar = tokenizer_ar.texts_to_sequences(arabic_sentences_train)
 train_data_ar = pad_sequences(train_data_ar, maxlen=max_sequence_length, padding='post', truncating='post')
 
-# Define encoder inputs and BiLSTM layer
+# Define encoder inputs and GRU layer
 encoder_inputs = Input(shape=(max_sequence_length,))
 encoder_embedding = Embedding(len(tokenizer_ar.word_index) + 1, embedding_dim)(encoder_inputs)
 #CNN Layer
@@ -64,7 +64,7 @@ decoder_lstm = decoder_lstm[:, :, latent_dim:]
 
 # Apply Attention mechanism
 attention = Dot(axes=[2, 2])([decoder_lstm, encoder_lstm])
-attention = Activation('sigmoid')(attention)
+attention = Activation('softmax')(attention)
 context = Dot(axes=[2, 1])([attention, encoder_lstm])
 decoder_combined_context = Concatenate(axis=-1)([context, decoder_lstm])
 
