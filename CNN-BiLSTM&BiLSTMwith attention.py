@@ -12,9 +12,9 @@ latent_dim = 256
 
 
 # Load train, validate, and test data from text files
-with open('D:/PHD Papers/scientific translation/GPT/BiLSTM witth Attention/LastDEASTExp/DEASTTrainProc.txt', 'r', encoding='utf-8') as f:
+with open('Train.txt', 'r', encoding='utf-8') as f:
     train_data = f.readlines()
-with open('D:/PHD Papers/scientific translation/GPT/BiLSTM witth Attention/LastDEASTExp/DEASTTestProc.txt', 'r', encoding='utf-8') as f:
+with open('Test.txt', 'r', encoding='utf-8') as f:
     test_data = f.readlines()
 
 # Extract English and Arabic sentences from data
@@ -51,21 +51,19 @@ conv1d_layer = Conv1D(filters=64, kernel_size=3, activation='relu')(encoder_embe
 maxpooling_layer = MaxPooling1D(pool_size=2)(conv1d_layer)
 
 encoder_bilstm = Bidirectional(LSTM(latent_dim, return_sequences=True))(maxpooling_layer)
-encoder_lstm = LSTM(latent_dim, return_sequences=True)(encoder_bilstm)
-encoder_lstm = Dense(latent_dim)(encoder_lstm)
+encoder_lstm = Dense(latent_dim)(encoder_bilstm)
 
-# Define decoder inputs and BiGRU layer
+# Define decoder inputs and BiLSTM layer
 decoder_inputs = Input(shape=(max_sequence_length,))
 decoder_embedding = Embedding(len(tokenizer_en.word_index) + 1, embedding_dim)(decoder_inputs)
 decoder_lstm = Bidirectional(LSTM(latent_dim, return_sequences=True))(decoder_embedding)
 
 # Slice only the ‘hidden_dim’ dimensions from the bidirectional output
-#By slicing the output of the bidirectional LSTM to keep only the forward direction hidden dimensions, the dimensions should now match when applying the attention mechanism
 decoder_lstm = decoder_lstm[:, :, latent_dim:]
 
 # Apply Attention mechanism
 attention = Dot(axes=[2, 2])([decoder_lstm, encoder_lstm])
-attention = Activation('sigmoid')(attention)
+attention = Activation('softmax')(attention)
 context = Dot(axes=[2, 1])([attention, encoder_lstm])
 decoder_combined_context = Concatenate(axis=-1)([context, decoder_lstm])
 
