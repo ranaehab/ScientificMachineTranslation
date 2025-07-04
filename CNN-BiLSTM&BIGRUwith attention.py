@@ -66,7 +66,7 @@ decoder_bigru = decoder_lstm[:, :, latent_dim:]
 attention = Dot(axes=[2, 2])([decoder_bigru, encoder_bils])
 attention = Activation('softmax')(attention)
 context = Dot(axes=[2, 1])([attention, encoder_bils])
-decoder_combined_context = Concatenate(axis=-1)([context, decoder_lstm])
+decoder_combined_context = Concatenate(axis=-1)([context, decoder_bigru])
 
 # Define decoder output layer
 decoder_dense = Dense(len(tokenizer_ar.word_index) + 1, activation='softmax')
