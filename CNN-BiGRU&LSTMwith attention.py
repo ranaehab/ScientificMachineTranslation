@@ -12,9 +12,9 @@ latent_dim = 256
 
 
 # Load train, validate, and test data from text files
-with open('D:/PHD Papers/scientific translation/GPT/BiLSTM witth Attention/LastDEASTExp/DEASTTrainProc.txt', 'r', encoding='utf-8') as f:
+with open('Train.txt', 'r', encoding='utf-8') as f:
     train_data = f.readlines()
-with open('D:/PHD Papers/scientific translation/GPT/BiLSTM witth Attention/LastDEASTExp/DEASTTestProc - Copy.txt', 'r', encoding='utf-8') as f:
+with open('Test.txt', 'r', encoding='utf-8') as f:
     test_data = f.readlines()
     
 # Extract English and Arabic sentences from data
