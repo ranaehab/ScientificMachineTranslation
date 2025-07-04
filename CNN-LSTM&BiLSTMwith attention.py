@@ -50,23 +50,22 @@ encoder_embedding = Embedding(len(tokenizer_ar.word_index) + 1, embedding_dim)(e
 conv1d_layer = Conv1D(filters=64, kernel_size=3, activation='relu')(encoder_embedding)
 maxpooling_layer = MaxPooling1D(pool_size=2)(conv1d_layer)
 
-encoder_bilstm = LSTM(latent_dim, return_sequences=True)(maxpooling_layer)
-encoder_lstm = Dense(latent_dim)(encoder_bilstm)
+encoder_lstm = LSTM(latent_dim, return_sequences=True)(maxpooling_layer)
+encoder_lstm = Dense(latent_dim)(encoder_lstm)
 
 # Define decoder inputs and BiLSTM layer
 decoder_inputs = Input(shape=(max_sequence_length,))
 decoder_embedding = Embedding(len(tokenizer_en.word_index) + 1, embedding_dim)(decoder_inputs)
-decoder_lstm = Bidirectional(LSTM(latent_dim, return_sequences=True))(decoder_embedding)
+decoder_bilstm = Bidirectional(LSTM(latent_dim, return_sequences=True))(decoder_embedding)
 
 # Slice only the ‘hidden_dim’ dimensions from the bidirectional output
-#By slicing the output of the bidirectional LSTM to keep only the forward direction hidden dimensions, the dimensions should now match when applying the attention mechanism
-decoder_lstm = decoder_lstm[:, :, latent_dim:]
+decoder_bilstm = decoder_bilstm[:, :, latent_dim:]
 
 # Apply Attention mechanism
-attention = Dot(axes=[2, 2])([decoder_lstm, encoder_lstm])
+attention = Dot(axes=[2, 2])([decoder_bilstm, encoder_lstm])
 attention = Activation('softmax')(attention)
 context = Dot(axes=[2, 1])([attention, encoder_lstm])
-decoder_combined_context = Concatenate(axis=-1)([context, decoder_lstm])
+decoder_combined_context = Concatenate(axis=-1)([context, decoder_bilstm])
 
 # Define decoder output layer
 decoder_dense = Dense(len(tokenizer_en.word_index) + 1, activation='softmax')
