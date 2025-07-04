@@ -6,7 +6,7 @@ from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 
 # Define hyperparameters
-max_sequence_length = 50
+max_sequence_length = 100
 embedding_dim = 100
 latent_dim = 256
 
