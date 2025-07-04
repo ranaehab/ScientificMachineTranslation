@@ -64,7 +64,7 @@ decoder_lstm = decoder_lstm[:, :, latent_dim:]
 # Apply Attention mechanism
 attention = Dot(axes=[2, 2])([decoder_lstm, encoder_big])
 attention = Activation('softmax')(attention)
-context = Dot(axes=[2, 1])([attention, encoder_lstm])
+context = Dot(axes=[2, 1])([attention, encoder_big])
 decoder_combined_context = Concatenate(axis=-1)([context, decoder_lstm])
 
 # Define decoder output layer
