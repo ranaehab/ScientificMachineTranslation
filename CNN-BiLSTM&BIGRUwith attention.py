@@ -59,8 +59,7 @@ decoder_embedding = Embedding(len(tokenizer_ar.word_index) + 1, embedding_dim)(d
 decoder_bigru = Bidirectional(GRU(latent_dim, return_sequences=True))(decoder_embedding)
 
 # Slice only the ‘hidden_dim’ dimensions from the bidirectional output
-#By slicing the output of the bidirectional LSTM to keep only the forward direction hidden dimensions, the dimensions should now match when applying the attention mechanism
-decoder_bigru = decoder_lstm[:, :, latent_dim:]
+decoder_bigru = decoder_bigru[:, :, latent_dim:]
 
 # Apply Attention mechanism
 attention = Dot(axes=[2, 2])([decoder_bigru, encoder_bils])
