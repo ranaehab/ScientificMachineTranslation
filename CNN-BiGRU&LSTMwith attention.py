@@ -60,7 +60,7 @@ decoder_lstm = GRU(latent_dim, return_sequences=True)(decoder_embedding)
 
 # Apply Attention mechanism
 attention = Dot(axes=[2, 2])([decoder_lstm, encoder_lstm])
-attention = Activation('sigmoid')(attention)
+attention = Activation('softmax')(attention)
 context = Dot(axes=[2, 1])([attention, encoder_lstm])
 decoder_combined_context = Concatenate(axis=-1)([context, decoder_lstm])
 
