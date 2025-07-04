@@ -12,9 +12,9 @@ latent_dim = 256
 
 
 # Load train, validate, and test data from text files
-with open('D:/PHD Papers/scientific translation/GPT/BiLSTM witth Attention/LastDEASTExp/DEASTTrain.txt', 'r', encoding='utf-8') as f:
+with open('Train.txt', 'r', encoding='utf-8') as f:
     train_data = f.readlines()
-with open('D:/PHD Papers/scientific translation/GPT/BiLSTM witth Attention/LastDEASTExp/DEASTTest2.txt', 'r', encoding='utf-8') as f:
+with open(Test.txt', 'r', encoding='utf-8') as f:
     test_data = f.readlines()
     
 # Extract English and Arabic sentences from data
@@ -60,7 +60,7 @@ decoder_lstm = LSTM(latent_dim, return_sequences=True)(decoder_embedding)
 
 # Apply Attention mechanism
 attention = Dot(axes=[2, 2])([decoder_lstm, encoder_lstm])
-attention = Activation('sigmoid')(attention)
+attention = Activation('softmax')(attention)
 context = Dot(axes=[2, 1])([attention, encoder_lstm])
 decoder_combined_context = Concatenate(axis=-1)([context, decoder_lstm])
 
